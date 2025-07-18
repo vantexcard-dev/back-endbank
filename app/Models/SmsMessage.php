@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Twilio\Rest\Client;
 
 class SmsMessage extends Model
 {
@@ -27,26 +28,26 @@ class SmsMessage extends Model
     {
         // Implémentez votre service SMS ici (ex: Twilio, Nexmo, etc.)
         $success = $this->sendViaSmsGateway();
-        
+
         if ($success) {
             $this->update([
                 'status' => 'sent',
                 'sent_at' => now()
             ]);
         }
-        
+
         return $success;
     }
-    
+
     protected function sendViaSmsGateway()
     {
         // Exemple avec Twilio (à adapter)
         try {
-            $twilio = new \Twilio\Rest\Client(
+            $twilio = new Client(
                 config('services.twilio.sid'),
                 config('services.twilio.token')
             );
-            
+
             $twilio->messages->create(
                 $this->phone_number,
                 [
@@ -54,7 +55,7 @@ class SmsMessage extends Model
                     'body' => $this->message
                 ]
             );
-            
+
             return true;
         } catch (\Exception $e) {
             report($e);
