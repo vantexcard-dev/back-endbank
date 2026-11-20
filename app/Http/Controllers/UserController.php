@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\Transaction;
 use App\Models\PaymentLink;
 use App\Models\PendingTransfer;
+use Illuminate\Support\Facades\Response;
 
 class UserController extends Controller
 {
@@ -46,5 +47,24 @@ class UserController extends Controller
         'pending_transfers' => $pendingTransfers,
         'dernier_lien_de_paiement' => $link,
     ]);
+}
+
+public function toggleCardStatus(Request $request, $cardId)
+{
+    $user = Auth::user();
+
+    $card = Card::where('id', $cardId)
+                ->where('user_id', $user->id)
+                ->first();
+
+    if (!$card) {
+        return response()->json(['error' => 'Carte introuvable'], 404);
+    }
+
+    // On inverse le statut
+    $card->status = $card->status === 'active' ? 'disabled' : 'active';
+    $card->save();
+
+    return response()->json($card);
 }
 }

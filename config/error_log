@@ -1,0 +1,88 @@
+[10-Aug-2025 12:33:59 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/database.php on line 19
+[10-Aug-2025 12:34:00 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/database.php on line 19
+[10-Aug-2025 12:34:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/app.php on line 16
+[10-Aug-2025 12:35:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/app.php on line 16
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/app.php on line 16
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/database.php on line 19
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/mail.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/mail.php on line 17
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/cache.php on line 18
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/queue.php on line 16
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/filesystems.php on line 16
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/services.php on line 18
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/auth.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/auth.php on line 17
+[08-Oct-2025 07:17:02 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/session.php on line 21
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/database.php:19
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/database.php on line 19
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/mail.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/mail.php on line 17
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/cache.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/cache.php on line 18
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/queue.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/queue.php on line 16
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/app.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/app.php on line 16
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/filesystems.php:16
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/filesystems.php on line 16
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/services.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/services.php on line 18
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/auth.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/auth.php on line 17
+[30-Oct-2025 01:39:58 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/vantphtt/my.vantexcard.com/config/session.php:21
+Stack trace:
+#0 {main}
+  thrown in /home/vantphtt/my.vantexcard.com/config/session.php on line 21

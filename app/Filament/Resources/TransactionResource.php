@@ -73,6 +73,12 @@ class TransactionResource extends Resource
                 Forms\Components\TextInput::make('currency')
                     ->label('Devise')
                     ->required(),
+                    
+                    // Date de creation
+                Forms\Components\DateTimePicker::make('created_at')
+                    ->label('Date et heure de création')
+                    ->required(),
+
 
                 // Type de transaction
                 Forms\Components\Select::make('type')

@@ -12,8 +12,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    <title>Finteezy - Fintech Startup & Digital Wallet</title>
     <!-- favicon  -->
+    <meta name="abe1496d4982122d195c90810a023e4cbeab689d" content="abe1496d4982122d195c90810a023e4cbeab689d" />
     <link rel="shortcut icon" href="assets/images/fav_icon.svg" type="image/x-icon">
     <!-- faremwork of css -->
     <link rel="stylesheet" href="{{asset('assets/css/bootstrap-lib/bootstrap.min.css')}}">
@@ -28,5 +28,6 @@
     <!-- animation of css -->
     <link rel="stylesheet" href="{{asset('assets/css/aos.css')}}">
     <!-- Scripts -->
+
 </head>
 

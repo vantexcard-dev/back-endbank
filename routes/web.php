@@ -11,12 +11,34 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RechargeController;
 use App\Http\Controllers\PaymentLinkController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Http\Controllers\Api\PayPalController;
+use App\Http\Controllers\SuccessionMailController;
+use App\Http\Controllers\StripeController;
+use App\Http\Controllers\PaymentController;
 
 Route::post('/payment/validate', [PaymentLinkController::class, 'validatePayment'])->name('payment.validate');
 Route::get('/payment/success', [PaymentLinkController::class, 'success'])->name('payment.success');
 
+Route::post('/stripe/create-intent', [StripeController::class, 'createIntent'])->name('stripe.create-intent');
+
+Route::post('/stripe/confirm-payment', [StripeController::class, 'confirmPayment'])->name('stripe.confirm-payment');
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+
+Route::post('/envoyer-email-succession', [SuccessionMailController::class, 'envoyerEmailSuccession']);
+
+
 Route::get('/chargement', function () {
     return view('chargement');
+});
+
+Route::get('/paypal/checkout', [PayPalController::class, 'checkout'])->name('paypal.checkout');
+
+Route::get('/payment-confirmation', function () {
+    return view('payment-confirmation');
+});
+
+Route::get('/payement/checkout', function () {
+    return view('payement');
 });
 
 Route::get('/chargement/{etape}', [TransfertController::class, 'afficherChargement'])->name('chargement');
@@ -32,6 +54,7 @@ Route::get('/page-de-succes', [TransfertController::class, 'afficherPageSucces']
 Route::post('/transfert', [TransfertController::class, 'send'])->name('transfer.send');
 Route::post('/pay/{token}/process', [PaymentLinkController::class, 'process'])
     ->name('payment.process');
+    
 Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),

@@ -6,7 +6,7 @@
 </head>
 <body style="font-family: sans-serif; background-color: #f7f7f7; padding: 20px;">
     <div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 10px;">
-        <h2 style="color: #333;">Hello {{ $user->name }},</h2>
+        <h2 style="color: #333;">Hello {{ $name }},</h2>
 
         <p>You're trying to initiate a transfer. Please use the code below to confirm the operation:</p>
 

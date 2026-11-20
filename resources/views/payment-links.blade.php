@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Paiement</title>
-    <!-- Intégrez le SDK PayPal -->
-    <script
-        src="https://www.paypal.com/sdk/js?client-id=AYFnMvF6DLqq65EjvH7ZqSuXcb5XHiRfeOhVKTD4o9UVvss8IcIuUcTVu2pxv9NbFtQoMP97AaFyMATw&currency=EUR"></script>
+    <!-- Intégration de Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
     <!-- Ajoutez un token CSRF pour les requêtes AJAX -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
@@ -138,8 +137,35 @@
             gap: 20px;
         }
 
-        #paypal-button-container {
+        #stripe-button-container {
             margin-bottom: 20px;
+        }
+
+        .stripe-button {
+            background: linear-gradient(45deg, #6772E5 0%, #7795F8 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .stripe-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(103, 114, 229, 0.3);
+        }
+
+        .stripe-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .btn-steinbank {
@@ -175,6 +201,42 @@
             color: #aaa;
         }
 
+        /* Formulaires Stripe */
+        .stripe-form {
+            margin-bottom: 20px;
+        }
+
+        .stripe-element {
+            background-color: var(--secondary-color);
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        body.dark-mode .stripe-element {
+            background-color: var(--secondary-dark);
+            border-color: #444;
+        }
+
+        .StripeElement {
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+        }
+
+        body.dark-mode .StripeElement {
+            background-color: #2d3748;
+            color: white;
+        }
+
+        .card-errors {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
         /* Toggle Dark Mode (pour desktop) */
         .theme-toggle {
             position: fixed;
@@ -204,6 +266,38 @@
                 /* Cache le toggle sur mobile */
             }
         }
+
+        /* Custom amount input */
+        .custom-amount-container {
+            margin: 20px 0;
+        }
+
+        .custom-amount-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            text-align: center;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+
+        body.dark-mode .custom-amount-input {
+            background-color: var(--secondary-dark);
+            border-color: #444;
+            color: var(--text-dark);
+        }
+
+        .custom-amount-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        body.dark-mode .custom-amount-input:focus {
+            border-color: var(--primary-dark);
+        }
     </style>
 </head>
 
@@ -222,48 +316,68 @@
                     {{ number_format($paymentLink->amount, 2) }} €
                 </div>
             @else
-                <div class="payment-amount text-muted">
-                    Montant à définir par le payeur
-                    <input type="number" id="customAmount" class="form-control" placeholder="Montant €">
-
+                <div class="custom-amount-container">
+                    <div class="payment-amount text-muted mb-2">
+                        Montant à définir par le payeur
+                    </div>
+                    <input type="number" id="customAmount" class="custom-amount-input" placeholder="Montant en €" min="1" step="0.01">
+                    <small class="text-muted d-block mt-2">Minimum 1€</small>
                 </div>
             @endif
         </div>
 
         <div class="payment-details text-center mb-4">
             <p><i class="fas fa-user"></i> Destinataire : {{ $paymentLink->user->email }}</p>
-            <p><i class="fas fa-lock"></i> Ce paiement est sécurisé</p>
+            <p><i class="fas fa-lock"></i> Ce paiement est sécurisé par Stripe</p>
         </div>
 
         <div class="payment-methods text-center">
-            <!-- Bouton PayPal -->
-            <div id="paypal-button-container" class="mb-3"></div>
+            <!-- Bouton Stripe -->
+            <div id="stripe-button-container" class="stripe-form">
+                <button id="stripe-payment-button" class="stripe-button">
+                    <i class="fab fa-cc-stripe"></i> Payer avec Stripe
+                </button>
+                <div id="card-errors" class="card-errors" role="alert"></div>
+            </div>
 
-            <!-- Paiement via SteinBank -->
+            <!-- Formulaire de carte bancaire -->
+            <div id="stripe-payment-form" style="display: none;">
+                <div class="stripe-element">
+                    <div id="card-element"></div>
+                </div>
+                <button id="submit-payment" class="stripe-button">
+                    <i class="fas fa-lock"></i> Payer maintenant
+                </button>
+                <button id="cancel-payment" class="btn-steinbank mt-2" style="background: #6c757d;">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+
+            <!-- Paiement via Vantexcard -->
             <form action="{{ route('payment.process', $paymentLink->token) }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-outline-dark">
+                <button type="submit" class="btn-steinbank">
                     <i class="fas fa-university"></i> Payer avec Vantexcard
                 </button>
             </form>
         </div>
 
         <div class="payment-footer text-center mt-4">
-            <p class="text-muted">En continuant, vous acceptez nos conditions d'utilisation</p>
+            <p class="text-muted">
+                <i class="fas fa-shield-alt"></i> Paiement 100% sécurisé
+            </p>
         </div>
     </div>
 
-
     <script>
-        // Gestion du mode sombre/clair (pour desktop)
         document.addEventListener("DOMContentLoaded", function () {
+            // Gestion du mode sombre/clair (pour desktop)
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
             const body = document.body;
 
             // Seulement pour desktop (le mode sombre est forcé sur mobile)
             if (window.innerWidth > 767) {
-                // Vérifier la préférence système ou le localStorage
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const savedTheme = localStorage.getItem('theme');
 
@@ -275,7 +389,6 @@
                     themeIcon.classList.replace('fa-sun', 'fa-moon');
                 }
 
-                // Basculer entre les modes
                 themeToggle.addEventListener('click', () => {
                     body.classList.toggle('dark-mode');
                     const isDark = body.classList.contains('dark-mode');
@@ -285,81 +398,187 @@
                 });
             }
 
-            // Configuration du bouton PayPal
-            paypal.Buttons({
+            // Variables globales
+            let stripe = null;
+            let elements = null;
+            let cardElement = null;
+            let paymentAmount = {{ $paymentLink->amount ?? 0 }};
+            const customAmountInput = document.getElementById('customAmount');
+            const stripePaymentButton = document.getElementById('stripe-payment-button');
+            const stripePaymentForm = document.getElementById('stripe-payment-form');
+            const submitPaymentButton = document.getElementById('submit-payment');
+            const cancelPaymentButton = document.getElementById('cancel-payment');
+            const cardErrors = document.getElementById('card-errors');
+
+            // Initialiser Stripe avec votre clé publique
+            stripe = Stripe('{{ env("STRIPE_KEY") }}'); // Remplacez par votre clé publique Stripe
+            elements = stripe.elements();
+
+            // Créer l'élément de carte
+            cardElement = elements.create('card', {
                 style: {
-                    layout: 'vertical',
-                    color: 'blue',
-                    shape: 'rect',
-                    label: 'paypal',
-                    height: 40
-                },
-                createOrder: function (data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: '{{ $paymentLink->amount }}',
-                                currency_code: 'EUR'
-                            }
-                        }]
-                    });
-                },
-                onApprove: function (data, actions) {
-                    return actions.order.capture().then(function (details) {
-                        fetch('{{ route("payment.validate", $paymentLink->token) }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: JSON.stringify({
-                                orderID: data.orderID,
-                                payerID: data.payerID,
-                                details: details
-                            })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    window.location.href = '{{ route("payment.success") }}';
-                                } else {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Erreur',
-                                        text: 'Erreur lors de la validation du paiement',
-                                        timer: 3000
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Erreur :', error);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Erreur',
-                                    text: 'Une erreur est survenue lors du traitement du paiement',
-                                    timer: 3000
-                                });
-                            });
-                    });
-                },
-                onCancel: function () {
+                    base: {
+                        color: body.classList.contains('dark-mode') ? '#ffffff' : '#32325d',
+                        fontFamily: "'Figtree', sans-serif",
+                        fontSmoothing: 'antialiased',
+                        fontSize: '16px',
+                        '::placeholder': {
+                            color: body.classList.contains('dark-mode') ? '#a0aec0' : '#aab7c4'
+                        }
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                        iconColor: '#fa755a'
+                    }
+                }
+            });
+
+            // Monter l'élément de carte
+            cardElement.mount('#card-element');
+
+            // Gérer les erreurs de carte
+            cardElement.on('change', function(event) {
+                if (event.error) {
+                    cardErrors.textContent = event.error.message;
+                } else {
+                    cardErrors.textContent = '';
+                }
+            });
+
+            // Gérer le montant personnalisé
+            if (customAmountInput) {
+                customAmountInput.addEventListener('input', function() {
+                    const amount = parseFloat(this.value);
+                    if (amount >= 1) {
+                        paymentAmount = amount;
+                        stripePaymentButton.disabled = false;
+                    } else {
+                        stripePaymentButton.disabled = true;
+                    }
+                });
+            }
+
+            // Afficher le formulaire de paiement Stripe
+            stripePaymentButton.addEventListener('click', function() {
+                if (paymentAmount <= 0) {
                     Swal.fire({
-                        icon: 'info',
-                        title: 'Paiement annulé',
-                        text: 'Vous avez annulé le paiement',
+                        icon: 'warning',
+                        title: 'Montant invalide',
+                        text: 'Veuillez entrer un montant valide (minimum 1€)',
                         timer: 3000
                     });
-                },
-                onError: function (err) {
-                    console.error('Erreur lors de la transaction : ', err);
+                    return;
+                }
+
+                stripePaymentButton.style.display = 'none';
+                stripePaymentForm.style.display = 'block';
+            });
+
+            // Annuler le paiement
+            cancelPaymentButton.addEventListener('click', function() {
+                stripePaymentForm.style.display = 'none';
+                stripePaymentButton.style.display = 'flex';
+            });
+
+            // Soumettre le paiement
+            submitPaymentButton.addEventListener('click', async function() {
+                submitPaymentButton.disabled = true;
+                submitPaymentButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement en cours...';
+
+                // Créer un PaymentIntent côté serveur
+                try {
+                    const response = await fetch('{{ route("payment.create-intent", $paymentLink->token) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            amount: paymentAmount * 100, // Convertir en centimes
+                            currency: 'eur'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Confirmer le paiement avec Stripe
+                    const result = await stripe.confirmCardPayment(data.clientSecret, {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                email: '{{ $paymentLink->user->email }}'
+                            }
+                        }
+                    });
+
+                    if (result.error) {
+                        cardErrors.textContent = result.error.message;
+                        submitPaymentButton.disabled = false;
+                        submitPaymentButton.innerHTML = '<i class="fas fa-lock"></i> Payer maintenant';
+                    } else {
+                        // Paiement réussi
+                        if (result.paymentIntent.status === 'succeeded') {
+                            // Enregistrer le paiement
+                            await fetch('{{ route("payment.validate", $paymentLink->token) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                },
+                                body: JSON.stringify({
+                                    payment_intent_id: result.paymentIntent.id,
+                                    amount: paymentAmount,
+                                    status: 'succeeded'
+                                })
+                            });
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Paiement réussi!',
+                                text: 'Votre paiement a été traité avec succès.',
+                                confirmButtonText: 'Continuer',
+                                allowOutsideClick: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '{{ route("payment.success") }}';
+                                }
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Erreur',
                         text: 'Une erreur est survenue lors du traitement du paiement',
                         timer: 3000
                     });
+                    submitPaymentButton.disabled = false;
+                    submitPaymentButton.innerHTML = '<i class="fas fa-lock"></i> Payer maintenant';
                 }
-            }).render('#paypal-button-container');
+            });
+
+            // Gérer le changement de thème pour Stripe Elements
+            themeToggle?.addEventListener('click', function() {
+                setTimeout(() => {
+                    if (cardElement) {
+                        cardElement.update({
+                            style: {
+                                base: {
+                                    color: body.classList.contains('dark-mode') ? '#ffffff' : '#32325d',
+                                    '::placeholder': {
+                                        color: body.classList.contains('dark-mode') ? '#a0aec0' : '#aab7c4'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }, 300);
+            });
         });
     </script>
 

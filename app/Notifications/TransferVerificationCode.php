@@ -11,19 +11,19 @@ class TransferVerificationCode extends Notification
     use Queueable;
 
     protected $code;
+    protected $name; // ✅ Ajout de l’attribut name
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $code)
+    public function __construct(string $code, string $name)
     {
         $this->code = $code;
+        $this->name = $name;
     }
 
     /**
      * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
@@ -33,13 +33,13 @@ class TransferVerificationCode extends Notification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Confirm Your Transfer')
+            ->subject('Code de vérification de transfert')
             ->view('emails.transfer_code', [
-                'user' => $notifiable,
                 'code' => $this->code,
+                'name' => $this->name // ✅ maintenant défini
             ]);
     }
 
